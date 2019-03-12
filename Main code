@@ -1,0 +1,94 @@
+#include <Arduino.h>
+boolean double_status;
+int button_1_status, button_2_status;
+int button_1 = 2;
+int button_2 = 3;
+int short_click_LED = 4;
+int long_click_LED = 5;
+int double_click_LED = 6;
+int Short_value = 100;
+int Long_value = 2000;
+int Double_value = 500;
+void button1_isr()
+{
+  button_1_status = pulseIn(button_1,HIGH);
+
+  if (button_1_status == Short_value)
+  short_click();
+  
+  if (button_1_status == Long_value) 
+  long_click();
+  
+  if (button_1_status == Double_value && double_status == 1 )
+  double_click();  
+  
+}
+
+void button2_isr( )
+{
+  button_2_status = pulseIn(button_2,HIGH);
+  
+  if (button_2_status == Short_value)
+  {
+  double_status = 0;
+  Serial.println("DOUBLE CLICK DE-ACTIVATED");
+  }
+  
+  if (button_2_status == Long_value)
+  {
+  double_status = 1;
+  Serial.println("DOUBLE CLICK ACTIVATED");
+  }
+}
+
+void short_click()
+{
+  Serial.println("SHORT CLICK");
+  digitalWrite(short_click_LED, HIGH);
+  delay(2000); 
+}
+
+void long_click()
+{
+  Serial.println("LONG CLICK");
+  digitalWrite(long_click_LED, HIGH);
+  delay(2000);
+}
+
+
+void double_click()
+{
+  Serial.println("DOUBLE CLICK");
+  digitalWrite(double_click_LED, HIGH);
+  delay(2000);
+}
+
+
+void setup() {
+Serial.begin(9600);
+double_status = 0;
+attachInterrupt(0, button1_isr, RISING);//2
+attachInterrupt(1, button2_isr, RISING);//3
+pinMode(short_click_LED, OUTPUT);
+pinMode(long_click_LED, OUTPUT);
+pinMode(double_click_LED, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(button_1, LOW);
+  digitalWrite(button_2, LOW);
+  button_1_status = 0;
+  button_2_status = 0;
+  digitalWrite(short_click_LED, LOW);
+  digitalWrite(long_click_LED, LOW);
+  digitalWrite(double_click_LED, LOW);
+  
+  delay(10);//mechanical buttons requires some time before they are actually pressed  
+  
+  digitalRead(button_1)//Interrupt 1
+  Serial.println(button_1_status);
+  
+  if(digitalRead(button_2))//Interrupt 2
+  Serial.println(button_2_status);
+
+}
