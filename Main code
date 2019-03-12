@@ -88,7 +88,7 @@ void loop() {
   digitalRead(button_1)//Interrupt 1
   Serial.println(button_1_status);
   
-  if(digitalRead(button_2))//Interrupt 2
+  digitalRead(button_2)//Interrupt 2
   Serial.println(button_2_status);
 
 }
